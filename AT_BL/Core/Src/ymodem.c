@@ -67,7 +67,7 @@ static HAL_StatusTypeDef ReceivePacket(uint8_t *p_data, uint32_t *p_length, uint
   uint8_t char1;
 
   *p_length = 0;
-  status = HAL_UART_Receive(&huart1, &char1, 1, timeout);
+  status = HAL_UART_Receive(&huart2, &char1, 1, timeout);
 
   if (status == HAL_OK)
   {
@@ -82,7 +82,7 @@ static HAL_StatusTypeDef ReceivePacket(uint8_t *p_data, uint32_t *p_length, uint
       case EOT:
         break;
       case CA:
-        if ((HAL_UART_Receive(&huart1, &char1, 1, timeout) == HAL_OK) && (char1 == CA))
+        if ((HAL_UART_Receive(&huart2, &char1, 1, timeout) == HAL_OK) && (char1 == CA))
         {
           packet_size = 2;
         }
@@ -103,7 +103,7 @@ static HAL_StatusTypeDef ReceivePacket(uint8_t *p_data, uint32_t *p_length, uint
 
     if (packet_size >= PACKET_SIZE )
     {
-      status = HAL_UART_Receive(&huart1, &p_data[PACKET_NUMBER_INDEX], packet_size + PACKET_OVERHEAD_SIZE, timeout);
+      status = HAL_UART_Receive(&huart2, &p_data[PACKET_NUMBER_INDEX], packet_size + PACKET_OVERHEAD_SIZE, timeout);
 
       /* Simple packet sanity check */
       if (status == HAL_OK )
@@ -360,8 +360,8 @@ COM_StatusTypeDef Ymodem_Receive ( uint32_t *p_size )
                     {
                       /* End session */
                       tmp = CA;
-                      HAL_UART_Transmit(&huart1, &tmp, 1, NAK_TIMEOUT);
-                      HAL_UART_Transmit(&huart1, &tmp, 1, NAK_TIMEOUT);
+                      HAL_UART_Transmit(&huart2, &tmp, 1, NAK_TIMEOUT);
+                      HAL_UART_Transmit(&huart2, &tmp, 1, NAK_TIMEOUT);
                       result = COM_LIMIT;
                     }
                     /* erase user application area */
@@ -458,7 +458,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
   while (( !ack_recpt ) && ( result == COM_OK ))
   {
     /* Send Packet */
-    HAL_UART_Transmit(&huart1, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
+    HAL_UART_Transmit(&huart2, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
 
     /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
@@ -471,7 +471,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 #endif /* CRC16_F */
 
     /* Wait for Ack and 'C' */
-    if (HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
+    if (HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
     {
       if (a_rx_ctrl[0] == ACK)
       {
@@ -479,10 +479,10 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       }
       else if (a_rx_ctrl[0] == CA)
       {
-        if ((HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == CA))
+        if ((HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == CA))
         {
           HAL_Delay( 2 );
-          __HAL_UART_FLUSH_DRREGISTER(&huart1);
+          __HAL_UART_FLUSH_DRREGISTER(&huart2);
           result = COM_ABORT;
         }
       }
@@ -522,7 +522,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
         pkt_size = PACKET_SIZE;
       }
 
-      HAL_UART_Transmit(&huart1, &aPacketData[PACKET_START_INDEX], pkt_size + PACKET_HEADER_SIZE, NAK_TIMEOUT);
+      HAL_UART_Transmit(&huart2, &aPacketData[PACKET_START_INDEX], pkt_size + PACKET_HEADER_SIZE, NAK_TIMEOUT);
       
       /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
@@ -535,7 +535,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 #endif /* CRC16_F */
       
       /* Wait for Ack */
-      if ((HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == ACK))
+      if ((HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == ACK))
       {
         ack_recpt = 1;
         if (size > pkt_size)
@@ -579,7 +579,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
     Serial_PutByte(EOT);
 
     /* Wait for Ack */
-    if (HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
+    if (HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
     {
       if (a_rx_ctrl[0] == ACK)
       {
@@ -587,10 +587,10 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
       }
       else if (a_rx_ctrl[0] == CA)
       {
-        if ((HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == CA))
+        if ((HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK) && (a_rx_ctrl[0] == CA))
         {
           HAL_Delay( 2 );
-          __HAL_UART_FLUSH_DRREGISTER(&huart1);
+          __HAL_UART_FLUSH_DRREGISTER(&huart2);
           result = COM_ABORT;
         }
       }
@@ -619,7 +619,7 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
     }
 
     /* Send Packet */
-    HAL_UART_Transmit(&huart1, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
+    HAL_UART_Transmit(&huart2, &aPacketData[PACKET_START_INDEX], PACKET_SIZE + PACKET_HEADER_SIZE, NAK_TIMEOUT);
 
     /* Send CRC or Check Sum based on CRC16_F */
 #ifdef CRC16_F    
@@ -632,12 +632,12 @@ COM_StatusTypeDef Ymodem_Transmit (uint8_t *p_buf, const uint8_t *p_file_name, u
 #endif /* CRC16_F */
 
     /* Wait for Ack and 'C' */
-    if (HAL_UART_Receive(&huart1, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
+    if (HAL_UART_Receive(&huart2, &a_rx_ctrl[0], 1, NAK_TIMEOUT) == HAL_OK)
     {
       if (a_rx_ctrl[0] == CA)
       {
           HAL_Delay( 2 );
-          __HAL_UART_FLUSH_DRREGISTER(&huart1);
+          __HAL_UART_FLUSH_DRREGISTER(&huart2);
           result = COM_ABORT;
       }
     }

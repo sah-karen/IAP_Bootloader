@@ -18,14 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "common.h"
 #include "usart.h"
 #include "gpio.h"
-#include "menu.h"
-#include "upgrade.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "common.h"
+#include "menu.h"
+#include "upgrade.h"
 
 /* USER CODE END Includes */
 
@@ -99,11 +99,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-  HAL_UART_Transmit(&huart1, (uint8_t *)"Inside Bootloader!!\r\n", 21, 100);
+  HAL_UART_Transmit(&huart2, (uint8_t *)"Inside Bootloader!!\r\n", 21, 100);
 
 //  Set_Magic_Number();
   if (Magic_Number())
@@ -122,7 +120,8 @@ Upgrade_program:
      JumpToApp();// if not jumped, then go to while and wait pressing '9'
   }
   
-  
+  /* USER CODE END 2 */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   Serial_PutString((uint8_t *)"\r\n No user Program, Enter 9 to upgrade\r\n");
@@ -145,9 +144,10 @@ Upgrade_program:
   	    Serial_PutByte('U'); // Upgrade mode
   	    time_out_u = HAL_GetTick();
   	    /* Clean the input path */
-  	    __HAL_UART_FLUSH_DRREGISTER(&huart1);
+  	    __HAL_UART_FLUSH_DRREGISTER(&huart2);
   	  }
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -191,8 +191,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
-  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
