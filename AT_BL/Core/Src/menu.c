@@ -96,6 +96,7 @@ uint16_t JumpToApp(void)
     if (((*(__IO uint32_t*)APPLICATION_ADDRESS) & 0x2FFE0000 ) == 0x20000000)
     {
     	Clear_Magic_Number();
+    	//CleanHandover();
         Serial_PutString((uint8_t *)"Start program execution......\r\n\n");
         //Disable all interrupts and clear any pending ones
         // do not forget enable it in application

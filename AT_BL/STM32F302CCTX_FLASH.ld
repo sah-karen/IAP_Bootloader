@@ -45,7 +45,10 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 40K
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 24K
+  /* AT_BL Relese build for AT-01 and B-03 application skk */
+  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 10K 
+  /* AT_BLDebug build for AT_BL_APP */
+  /*FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 24K */ 
 }
 
 /* Sections */

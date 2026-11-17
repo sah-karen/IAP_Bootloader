@@ -44,8 +44,15 @@ enum
 /* Define the address from where user application will be loaded.
    Note: this area is reserved for the IAP code                  */
 #define FLASH_PAGE_STEP         FLASH_PAGE_SIZE           /* Size of page : 2 Kbytes */
-#define APPLICATION_ADDRESS     (uint32_t)0x08006000      /* skk Start user code address: ADDR_FLASH_PAGE_8 */
 
+//#define FOR_AT_BL_APP
+
+#ifdef FOR_AT_BL_APP
+#define APPLICATION_ADDRESS     (uint32_t)0x08006000      /* Start user code address: ADDR_FLASH_PAGE_10  24kb for debug */
+#else  // for AT-01 and B-03 release build
+// For AT-01 Release or B-03 Release builds , offset is 10kb -- 0x2800
+#define APPLICATION_ADDRESS     (uint32_t)0x08002800      /* Start user code address: ADDR_FLASH_PAGE_8  16 kb for release*/
+#endif
 /* Notable Flash addresses */
 #define USER_FLASH_END_ADDRESS        ADDR_FLASH_PAGE_127 + FLASH_PAGE_SIZE
 
